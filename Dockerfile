@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.9
 
 WORKDIR /distsys-app 
 
@@ -8,4 +8,6 @@ RUN pip install -r requirements.txt
 
 COPY ./src ./src 
 
-CMD ["python", "./src/main.py"]
+RUN mkdir shared
+
+CMD ["python", "-u", "./src/main.py"]
