@@ -1,0 +1,6 @@
+__py*
+shared
+env
+venv
+Pipfile
+shared/*
