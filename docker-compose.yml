@@ -4,3 +4,5 @@ services:
     build: .
     deploy:
       replicas: 5
+    volumes:
+      - ./shared:/distsys-app/shared
