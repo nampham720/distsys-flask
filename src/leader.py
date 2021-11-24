@@ -4,6 +4,14 @@ from concurrent.futures import ThreadPoolExecutor
 
 class LeaderManager:
     def __init__(self, election_window, message_timeout):
+        '''Constructs LeaderManager.
+
+        @param election_window:  The maximum length of the election in seconds
+        @param message_timeout:
+            Timeout for node-to-node communication in seconds. If no reseponse
+            is received within the timeout, the target node is considered to
+            be down.
+        '''
         self.leader_ip = None
         self._election_window = election_window
         self._message_timeout = message_timeout
@@ -15,18 +23,14 @@ class LeaderManager:
     def _mark_started(self):
         self._last_election = time.time()
 
-    def victory(self, leader_ip):
-        self.leader_ip = leader_ip
-        # self._mark_started()
-
     def _broadcast_election(self, own_ip, other_nodes):
         larger_nodes = list(filter(lambda x: x > own_ip, other_nodes))
 
         def node_answers(target_node):
             url = f"http://{target_node}:8000/election"
+            req = urllib.request.Request(url, method="POST")
             try:
-                urllib.request.urlopen(
-                    url, timeout=self._message_timeout)
+                urllib.request.urlopen(req, timeout=self._message_timeout)
                 return True
             except Exception as ex:
                 print(f"Node {own_ip} failed broadcasting election to {target_node}: {ex}")
@@ -37,13 +41,13 @@ class LeaderManager:
             return is_leader
 
     def _broadcast_victory(self, own_ip, other_nodes):
-        self.victory(own_ip)
+        self.leader_ip = own_ip
 
         def f(target_node):
             url = f"http://{target_node}:8000/victory"
+            data = urllib.parse.urlencode({"leader_ip": own_ip})
+            data = data.encode('ascii')
             try:
-                data = urllib.parse.urlencode({"leader_ip": own_ip})
-                data = data.encode('ascii')
                 urllib.request.urlopen(
                     url, data, timeout=self._message_timeout)
             except Exception as ex:
@@ -56,12 +60,16 @@ class LeaderManager:
         if self._in_election():
             return
         self._mark_started()
-        # TODO should this be here?
-        # self.leader_ip = None
         if self._broadcast_election(own_ip, other_nodes):
             self._broadcast_victory(own_ip, other_nodes)
 
     def hold_election(self, own_ip, other_nodes, wait=True):
+        '''Holds leader election.
+
+        @param own_ip: Node's ip address
+        @param other_nodes: List of other node's ip addresses
+        @param wait: Whether the function should wait for finishing the election
+        '''
         self._hold_election(own_ip, other_nodes)
         if wait:
             time.sleep(self._election_window)

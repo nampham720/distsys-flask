@@ -26,7 +26,7 @@ def status():
 def die():
     counter_app.quit = True
 
-@app.route("/election", methods=["GET"])
+@app.route("/election", methods=["POST"])
 def election():
     if counter_app.discovery_ready:
         counter_app.leader_manager.hold_election(
@@ -38,7 +38,7 @@ def election():
 
 @app.route("/victory", methods=["POST"])
 def victory():
-    counter_app.leader_manager.victory(request.form["leader_ip"])
+    counter_app.leader_manager.leader_ip = request.form["leader_ip"]
     return "OK"
 
 if __name__ == "__main__":
