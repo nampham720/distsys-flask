@@ -17,11 +17,23 @@ class LeaderManager:
         self._message_timeout = message_timeout
         self._last_election = 0
 
-    def _in_election(self):
-        return self._last_election + self._election_window > time.time()
+    def hold_election(self, own_ip, other_nodes, wait=True):
+        '''Holds leader election.
 
-    def _mark_started(self):
-        self._last_election = time.time()
+        @param own_ip: Node's ip address
+        @param other_nodes: List of other node's ip addresses
+        @param wait: Whether the function should wait for finishing the election
+        '''
+        self._hold_election(own_ip, other_nodes)
+        if wait:
+            time.sleep(self._election_window)
+
+    def _hold_election(self, own_ip, other_nodes):
+        if self._in_election():
+            return
+        self._mark_started()
+        if self._broadcast_election(own_ip, other_nodes):
+            self._broadcast_victory(own_ip, other_nodes)
 
     def _broadcast_election(self, own_ip, other_nodes):
         larger_nodes = list(filter(lambda x: x > own_ip, other_nodes))
@@ -56,20 +68,8 @@ class LeaderManager:
         with ThreadPoolExecutor(max(1, len(other_nodes))) as executor:
             executor.map(f, other_nodes)
 
-    def _hold_election(self, own_ip, other_nodes):
-        if self._in_election():
-            return
-        self._mark_started()
-        if self._broadcast_election(own_ip, other_nodes):
-            self._broadcast_victory(own_ip, other_nodes)
+    def _in_election(self):
+        return self._last_election + self._election_window > time.time()
 
-    def hold_election(self, own_ip, other_nodes, wait=True):
-        '''Holds leader election.
-
-        @param own_ip: Node's ip address
-        @param other_nodes: List of other node's ip addresses
-        @param wait: Whether the function should wait for finishing the election
-        '''
-        self._hold_election(own_ip, other_nodes)
-        if wait:
-            time.sleep(self._election_window)
+    def _mark_started(self):
+        self._last_election = time.time()
