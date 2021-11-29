@@ -1,2 +1,5 @@
-very basic code here
+# Distsys Flask
+
+## Requirement
+- Python ^3.10
 
