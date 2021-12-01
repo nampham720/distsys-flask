@@ -11,11 +11,13 @@ SHARED_DIR = "shared"
 NODE_PREFIX = "node_"
 
 class CounterApp(Thread):
-    def __init__(self):
+    def __init__(self, leader_manager):
         Thread.__init__(self)
         self.quit = False
         self._my_ip = None
         self.nodes = []
+        self.discovery_ready = False
+        self.leader_manager = leader_manager
 
     def get_my_ip(self):
         if self._my_ip:
@@ -83,6 +85,7 @@ class CounterApp(Thread):
                 except:
                     pass
         self.nodes = working_nodes
+        self.discovery_ready = True
 
         print("Discovery ready for {}, nodes: {}!".format(self.get_my_ip(), self.nodes))
 
@@ -90,6 +93,9 @@ class CounterApp(Thread):
         print("CounterApp {} starting...".format(self.get_my_ip()))
 
         self.discovery(3000)
+
+        self.leader_manager.hold_election(self.get_my_ip(), self.nodes)
+        print("Node {}'s leader: {}".format(self.get_my_ip(), self.leader_manager.leader_ip))
 
         while not self.quit:
             time.sleep(1)
