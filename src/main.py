@@ -57,13 +57,5 @@ def victory():
     return "OK"
 
 if __name__ == "__main__":
-    if not os.path.exists("./shared/input"):
-        os.mkdir("./shared/input")
-        file1 = open("./shared/input/file1", "w")
-        file1.write("a b b c c c")
-        file2 = open("./shared/input/file2", "w")
-        file2.write("c d d d d")
-        file1.close()
-        file2.close()
     counter_app.start()
     app.run(debug=False, port=8000, host="0.0.0.0")
