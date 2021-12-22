@@ -15,13 +15,13 @@ OUTPUT_FILE = "output"
 NODE_PREFIX = "node_"
 
 class CounterApp(Thread):
-    def __init__(self, leader_manager):
+    def __init__(self, bully_algorithm):
         Thread.__init__(self)
         self.quit = False
         self._my_ip = None
         self.other_nodes = []
         self.discovery_ready = False
-        self.leader_manager = leader_manager
+        self.bully_algorithm = bully_algorithm
         self.task_lock = threading.Lock()
 
     def get_my_ip(self):
@@ -184,12 +184,12 @@ class CounterApp(Thread):
 
         self.discovery(3000)
 
-        self.leader_manager.hold_election(self.get_my_ip(), self.other_nodes)
-        print("Node {}'s leader: {}".format(self.get_my_ip(), self.leader_manager.leader_ip))
+        self.bully_algorithm.hold_election(self.get_my_ip(), self.other_nodes)
+        print("Node {}'s leader: {}".format(self.get_my_ip(), self.bully_algorithm.leader_ip))
 
         print("CounterApp {} running...".format(self.get_my_ip()))
 
-        if self.get_my_ip() == self.leader_manager.leader_ip:
+        if self.get_my_ip() == self.bully_algorithm.leader_ip:
             self.run_leader()
 
 

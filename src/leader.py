@@ -2,9 +2,9 @@ import time
 import urllib
 from concurrent.futures import ThreadPoolExecutor
 
-class LeaderManager:
+class BullyAlgorithm:
     def __init__(self, election_window, message_timeout):
-        '''Constructs LeaderManager.
+        '''Constructs BullyAlgorithm.
 
         @param election_window:  The maximum length of the election in seconds
         @param message_timeout:

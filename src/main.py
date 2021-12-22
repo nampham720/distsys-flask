@@ -8,7 +8,7 @@ import leader
 import os
 
 app = Flask(__name__)
-counter_app = CounterApp(leader.LeaderManager(3, 0.1))
+counter_app = CounterApp(leader.BullyAlgorithm(3, 0.1))
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
@@ -44,7 +44,7 @@ def die():
 @app.route("/election", methods=["POST"])
 def election():
     if counter_app.discovery_ready:
-        counter_app.leader_manager.hold_election(
+        counter_app.bully_algorithm.hold_election(
             counter_app.get_my_ip(),
             counter_app.other_nodes,
             False
@@ -53,7 +53,7 @@ def election():
 
 @app.route("/victory", methods=["POST"])
 def victory():
-    counter_app.leader_manager.leader_ip = request.form["leader_ip"]
+    counter_app.bully_algorithm.leader_ip = request.form["leader_ip"]
     return "OK"
 
 if __name__ == "__main__":
