@@ -5,8 +5,10 @@ a distributed manner.
 
 ## Usage
 
+Get the the venv (Linux) `. venv/bi/activate`
+
 The input files should be placed in the `shared/input/` path.
-The program can then be run with the command `docker-compose up --build`.
+The program can then be run with the command `docker-compose up --build` 
 The result will be stored in the `shared/output` file in JSON format.
 
 ## Requirement
