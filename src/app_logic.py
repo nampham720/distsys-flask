@@ -134,14 +134,12 @@ class CounterApp(Thread):
 
         print("Merging partial results...")
         for result in file_results:
-            print(result)
             for word in result:
                 total_result[word] = total_result.get(word, 0) + result[word]
 
         with open(SHARED_DIR + os.sep + OUTPUT_FILE, 'w') as f:
             json.dump(total_result, f)
 
-        print("Word counting result:", total_result)
         self._kill_workers()
 
 

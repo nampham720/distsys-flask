@@ -25,7 +25,6 @@ def assign():
     with open(file) as f:
         data = f.read()
 
-    print(f"Node {counter_app.get_my_ip()} read content {data} from file {file}")
     mapperData = words_counting.mapper(data)
     frequency = words_counting.counting(mapperData)
     return frequency
