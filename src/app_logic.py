@@ -138,7 +138,7 @@ class CounterApp(Thread):
                 total_result[word] = total_result.get(word, 0) + result[word]
 
         with open(SHARED_DIR + os.sep + OUTPUT_FILE, 'w') as f:
-            json.dump(total_result, f)
+            json.dump(total_result, f, indent=0)
 
         self._kill_workers()
 
@@ -160,7 +160,7 @@ class CounterApp(Thread):
         data = data.encode('ascii')
 
         try:
-            q = urllib.request.urlopen(url, data, timeout=worker_timeout_ms)
+            q = urllib.request.urlopen(url, data, timeout=worker_timeout_ms/1000)
             result = json.load(q)
         except Exception as ex:
             print(f"Worker {worker} failed returning task result for {file}")
